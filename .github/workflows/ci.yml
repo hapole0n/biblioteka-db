@@ -1,0 +1,69 @@
+name: SQL Validation
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-sql:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: biblioteka
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
+              break
+            fi
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Configure MySQL for triggers/events
+        run: |
+          mysql -h 127.0.0.1 -uroot -proot -e "
+            SET GLOBAL log_bin_trust_function_creators = 1;
+            SET GLOBAL event_scheduler = ON;
+          "
+
+      - name: Run migrations in order
+        run: |
+          for f in migrations/V*.sql; do
+            echo "Running $f"
+            mysql -h 127.0.0.1 -uroot -proot biblioteka < "$f"
+          done
+
+      - name: Verify schema counts
+        run: |
+          mysql -h 127.0.0.1 -uroot -proot biblioteka -e "
+            SELECT
+              (SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA='biblioteka') AS tables,
+              (SELECT COUNT(*) FROM information_schema.VIEWS  WHERE TABLE_SCHEMA='biblioteka') AS views,
+              (SELECT COUNT(*) FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA='biblioteka') AS triggers,
+              (SELECT COUNT(*) FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA='biblioteka') AS routines;
+          "
+
+      - name: Run verification queries
+        run: mysql -h 127.0.0.1 -uroot -proot biblioteka < queries/verification.sql
+
+      - name: Done
+        run: echo "All migrations and queries executed successfully"

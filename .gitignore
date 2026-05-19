@@ -1,0 +1,31 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Database backups (heavy)
+*.dump
+*.sql.bak
+backups/
+
+# Logs
+*.log
+
+# MySQL local
+*.pid
+ib_logfile*
+ibdata*
+
+# Secrets
+.env
+*.env.local
+secrets/
+
+# Build artifacts
+build/
+dist/
