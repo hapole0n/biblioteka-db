@@ -1,6 +1,6 @@
-# Biblioteka — System Zarzadzania Biblioteka
+﻿# Biblioteka — System Zarzadzania Biblioteka
 
-[![SQL Validation](https://github.com/YOUR_USERNAME/biblioteka-db/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/biblioteka-db/actions)
+[![SQL Validation](https://github.com/hapole0n/biblioteka-db/actions/workflows/ci.yml/badge.svg)](https://github.com/hapole0n/biblioteka-db/actions)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0+-blue.svg)](https://www.mysql.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
