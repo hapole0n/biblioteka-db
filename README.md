@@ -12,7 +12,7 @@
 | Imie i nazwisko        | Grupa  |
 |------------------------|--------|
 | Oleh Kropyva           | 1.1.2  |
-| Ihor Paukov            | 1.1.2  |
+| Illia Lipsha           | 1.1.2  |
 | Mateusz Tomasz Niziuk  | 1.1.2  | 
 | Maciej Kowalczy        | 1.1.2  | 
 
