@@ -25,7 +25,6 @@
 - **5 funkcji UDF** (oblicz kare, status lojalnosci, dostepnosc, ...)
 - **2 zaplanowane eventy** (codzienne sprawdzanie przetrzymanych)
 - **FULLTEXT search** po tytulach z rankingiem trafnosci
-- **Rekurencyjne CTE** (saga Wiedzmina, graf polecen czytelniczych)
 - **Generyczny audit log** w formacie JSON
 - **4 role bazodanowe** (Admin, Bibliotekarz, Czytelnik, Analityk)
 - **CI/CD** przez GitHub Actions
