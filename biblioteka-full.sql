@@ -120,6 +120,7 @@ CREATE TABLE Audyt_Czytelnicy (
     data_usuniecia  DATETIME DEFAULT CURRENT_TIMESTAMP,
     usuniety_przez  VARCHAR(100)
 ) ENGINE=InnoDB;
+
 -- ============================================================================
 -- V02__seed.sql - Dane testowe: 125 czytelnikow, 64 autorow, 110 ksiazek
 -- ============================================================================
@@ -394,6 +395,7 @@ INSERT INTO W_S (id_wypozyczenie, id_status, data_zmiany) VALUES
 (20,2,'2025-04-03 10:00:00'),(23,2,'2025-04-10 10:00:00'),(29,2,'2025-04-25 10:00:00'),(34,2,'2025-05-04 10:00:00'),
 (40,2,'2025-05-10 10:00:00'),(45,2,'2025-05-01 10:00:00'),(45,3,'2025-05-14 11:00:00'),(50,2,'2025-03-20 10:00:00'),
 (55,2,'2025-04-20 10:00:00');
+
 -- ============================================================================
 -- V03__views.sql - 8 widokow podstawowych (proste + zlozone + aktualizowalny)
 -- ============================================================================
@@ -467,6 +469,7 @@ WHERE NOT EXISTS (
     JOIN Wypozyczenia w ON w.id_wypozyczenie = we.id_wypozyczenie
     WHERE we.id_egzemplarz = e.id_egzemplarz AND w.data_zwrotu IS NULL
 );
+
 -- ============================================================================
 -- V04__triggers.sql - 8 triggerow biznesowych
 -- ============================================================================
@@ -562,6 +565,7 @@ BEGIN
 END//
 
 DELIMITER ;
+
 -- ============================================================================
 -- V05__functions.sql - 5 funkcji skalarnych (UDF)
 -- ============================================================================
@@ -640,11 +644,11 @@ BEGIN
 END//
 
 DELIMITER ;
+
 -- ============================================================================
--- V09__advanced_features.sql - tabele subsystemow + audit log + FULLTEXT + kolejka
--- WAZNE: ten plik MUSI byc zaladowany PRZED V06 (procedury) bo uzywaja Punkty_Lojalnosci
--- W naszej numeracji V09 ladowane jest po V06, dlatego procedure uzywaja juz utworzone tu tabele.
--- Aby zapewnic poprawna kolejnosc, ta migracja TWORZY tabele subsystemow i triggery do nich.
+-- V06__advanced_features.sql - tabele subsystemow + audit log + FULLTEXT + kolejka
+-- WAZNE: ten plik MUSI byc zaladowany PRZED V07 (procedury),
+-- bo procedury uzywaja tabel Punkty_Lojalnosci oraz Rezerwacje.
 -- ============================================================================
 USE biblioteka;
 
@@ -767,9 +771,10 @@ BEGIN
 END//
 
 DELIMITER ;
+
 -- ============================================================================
--- V06__procedures.sql - 5 procedur skladowanych z transakcjami
--- WYMAGANIE: V09 musi byc juz zaladowane (Punkty_Lojalnosci, Rezerwacje)
+-- V07__procedures.sql - 5 procedur skladowanych z transakcjami
+-- WYMAGANIE: V06 musi byc juz zaladowane (Punkty_Lojalnosci, Rezerwacje)
 -- ============================================================================
 USE biblioteka;
 
@@ -934,8 +939,9 @@ BEGIN
 END//
 
 DELIMITER ;
+
 -- ============================================================================
--- V07__events.sql - 2 zaplanowane zadania (Event Scheduler)
+-- V08__events.sql - 2 zaplanowane zadania (Event Scheduler)
 -- ============================================================================
 USE biblioteka;
 SET GLOBAL event_scheduler = ON;
@@ -980,8 +986,9 @@ BEGIN
 END//
 
 DELIMITER ;
+
 -- ============================================================================
--- V08__advanced_views.sql - 5 widokow z funkcjami okiennymi
+-- V09__advanced_views.sql - 5 widokow z funkcjami okiennymi
 -- ============================================================================
 USE biblioteka;
 
@@ -1045,49 +1052,90 @@ LEFT JOIN Egzemplarze e  ON e.id_ksiazka = k.id_ksiazka
 LEFT JOIN W_E we         ON we.id_egzemplarz = e.id_egzemplarz
 LEFT JOIN Wypozyczenia w ON w.id_wypozyczenie = we.id_wypozyczenie
 GROUP BY a.id_autor, a.imie, a.nazwisko;
+
 -- ============================================================================
 -- V10__permissions.sql - Role i prawa dostepu
 -- ============================================================================
 USE biblioteka;
 
+-- ===== ROLE BAZODANOWE =====
+CREATE ROLE IF NOT EXISTS
+    'rola_admin_biblioteka'@'%',
+    'rola_bibliotekarz'@'%',
+    'rola_czytelnik'@'%',
+    'rola_analityk'@'%';
+
 -- 1. ADMIN BAZY (pelne prawa)
-CREATE USER IF NOT EXISTS 'admin_biblioteka'@'localhost'
-    IDENTIFIED BY 'AdminPass2025!';
-GRANT ALL PRIVILEGES ON biblioteka.* TO 'admin_biblioteka'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON biblioteka.* TO 'rola_admin_biblioteka'@'%' WITH GRANT OPTION;
 
 -- 2. BIBLIOTEKARZ (CRUD na danych, brak DDL)
-CREATE USER IF NOT EXISTS 'bibliotekarz'@'localhost'
-    IDENTIFIED BY 'Bibliotekarz2025!';
-GRANT SELECT, INSERT, UPDATE, DELETE ON biblioteka.Czytelnicy   TO 'bibliotekarz'@'localhost';
-GRANT SELECT, INSERT, UPDATE, DELETE ON biblioteka.Wypozyczenia TO 'bibliotekarz'@'localhost';
-GRANT SELECT, INSERT, UPDATE, DELETE ON biblioteka.W_E          TO 'bibliotekarz'@'localhost';
-GRANT SELECT, INSERT, UPDATE, DELETE ON biblioteka.W_S          TO 'bibliotekarz'@'localhost';
-GRANT SELECT, INSERT, UPDATE         ON biblioteka.Kary         TO 'bibliotekarz'@'localhost';
-GRANT SELECT, INSERT                 ON biblioteka.Rezerwacje   TO 'bibliotekarz'@'localhost';
-GRANT SELECT                         ON biblioteka.Ksiazki      TO 'bibliotekarz'@'localhost';
-GRANT SELECT                         ON biblioteka.Egzemplarze  TO 'bibliotekarz'@'localhost';
-GRANT SELECT                         ON biblioteka.Autorzy      TO 'bibliotekarz'@'localhost';
-GRANT EXECUTE ON PROCEDURE biblioteka.sp_wypozycz_ksiazke    TO 'bibliotekarz'@'localhost';
-GRANT EXECUTE ON PROCEDURE biblioteka.sp_zwroc_ksiazke       TO 'bibliotekarz'@'localhost';
-GRANT EXECUTE ON PROCEDURE biblioteka.sp_zarezerwuj_ksiazke  TO 'bibliotekarz'@'localhost';
-GRANT EXECUTE ON PROCEDURE biblioteka.sp_top_czytelnicy      TO 'bibliotekarz'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON biblioteka.Czytelnicy   TO 'rola_bibliotekarz'@'%';
+GRANT SELECT, INSERT, UPDATE, DELETE ON biblioteka.Wypozyczenia TO 'rola_bibliotekarz'@'%';
+GRANT SELECT, INSERT, UPDATE, DELETE ON biblioteka.W_E          TO 'rola_bibliotekarz'@'%';
+GRANT SELECT, INSERT, UPDATE, DELETE ON biblioteka.W_S          TO 'rola_bibliotekarz'@'%';
+GRANT SELECT, INSERT, UPDATE         ON biblioteka.Kary         TO 'rola_bibliotekarz'@'%';
+GRANT SELECT, INSERT                 ON biblioteka.Rezerwacje   TO 'rola_bibliotekarz'@'%';
+GRANT SELECT                         ON biblioteka.Ksiazki      TO 'rola_bibliotekarz'@'%';
+GRANT SELECT                         ON biblioteka.Egzemplarze  TO 'rola_bibliotekarz'@'%';
+GRANT SELECT                         ON biblioteka.Autorzy      TO 'rola_bibliotekarz'@'%';
+GRANT EXECUTE ON PROCEDURE biblioteka.sp_wypozycz_ksiazke       TO 'rola_bibliotekarz'@'%';
+GRANT EXECUTE ON PROCEDURE biblioteka.sp_zwroc_ksiazke          TO 'rola_bibliotekarz'@'%';
+GRANT EXECUTE ON PROCEDURE biblioteka.sp_zarezerwuj_ksiazke     TO 'rola_bibliotekarz'@'%';
+GRANT EXECUTE ON PROCEDURE biblioteka.sp_top_czytelnicy         TO 'rola_bibliotekarz'@'%';
 
--- 3. CZYTELNIK (tylko publiczne widoki, BRAK dostepu do danych osobowych)
-CREATE USER IF NOT EXISTS 'czytelnik'@'localhost'
-    IDENTIFIED BY 'Czytelnik2025!';
-GRANT SELECT ON biblioteka.v_czytelnicy_publiczni   TO 'czytelnik'@'localhost';
-GRANT SELECT ON biblioteka.v_ksiazki_pelne          TO 'czytelnik'@'localhost';
-GRANT SELECT ON biblioteka.v_kategorie_licznosc     TO 'czytelnik'@'localhost';
-GRANT SELECT ON biblioteka.v_egzemplarze_dostepne   TO 'czytelnik'@'localhost';
-GRANT SELECT ON biblioteka.v_top3_per_kategoria     TO 'czytelnik'@'localhost';
+-- 3. CZYTELNIK (tylko publiczne widoki, brak dostepu do danych wrazliwych)
+GRANT SELECT ON biblioteka.v_czytelnicy_publiczni TO 'rola_czytelnik'@'%';
+GRANT SELECT ON biblioteka.v_ksiazki_pelne        TO 'rola_czytelnik'@'%';
+GRANT SELECT ON biblioteka.v_kategorie_licznosc   TO 'rola_czytelnik'@'%';
+GRANT SELECT ON biblioteka.v_egzemplarze_dostepne TO 'rola_czytelnik'@'%';
+GRANT SELECT ON biblioteka.v_top3_per_kategoria   TO 'rola_czytelnik'@'%';
 
 -- 4. ANALITYK (read-only na wszystko, dla raportow)
+GRANT SELECT ON biblioteka.* TO 'rola_analityk'@'%';
+
+-- ===== UZYTKOWNICY DEMONSTRACYJNI =====
+CREATE USER IF NOT EXISTS 'admin_biblioteka'@'localhost'
+    IDENTIFIED BY 'AdminPass2025!';
+CREATE USER IF NOT EXISTS 'admin_biblioteka'@'%'
+    IDENTIFIED BY 'AdminPass2025!';
+
+CREATE USER IF NOT EXISTS 'bibliotekarz'@'localhost'
+    IDENTIFIED BY 'Bibliotekarz2025!';
+CREATE USER IF NOT EXISTS 'bibliotekarz'@'%'
+    IDENTIFIED BY 'Bibliotekarz2025!';
+
+CREATE USER IF NOT EXISTS 'czytelnik'@'localhost'
+    IDENTIFIED BY 'Czytelnik2025!';
+CREATE USER IF NOT EXISTS 'czytelnik'@'%'
+    IDENTIFIED BY 'Czytelnik2025!';
+
 CREATE USER IF NOT EXISTS 'analityk'@'localhost'
     IDENTIFIED BY 'Analityk2025!';
-GRANT SELECT ON biblioteka.* TO 'analityk'@'localhost';
+CREATE USER IF NOT EXISTS 'analityk'@'%'
+    IDENTIFIED BY 'Analityk2025!';
+
+GRANT 'rola_admin_biblioteka'@'%' TO 'admin_biblioteka'@'localhost', 'admin_biblioteka'@'%';
+GRANT 'rola_bibliotekarz'@'%'    TO 'bibliotekarz'@'localhost',      'bibliotekarz'@'%';
+GRANT 'rola_czytelnik'@'%'       TO 'czytelnik'@'localhost',         'czytelnik'@'%';
+GRANT 'rola_analityk'@'%'        TO 'analityk'@'localhost',          'analityk'@'%';
+
+SET DEFAULT ROLE 'rola_admin_biblioteka'@'%' TO 'admin_biblioteka'@'localhost', 'admin_biblioteka'@'%';
+SET DEFAULT ROLE 'rola_bibliotekarz'@'%'    TO 'bibliotekarz'@'localhost',      'bibliotekarz'@'%';
+SET DEFAULT ROLE 'rola_czytelnik'@'%'       TO 'czytelnik'@'localhost',         'czytelnik'@'%';
+SET DEFAULT ROLE 'rola_analityk'@'%'        TO 'analityk'@'localhost',          'analityk'@'%';
 
 FLUSH PRIVILEGES;
 
--- Lista uzytkownikow z ich uprawnieniami
-SELECT User, Host FROM mysql.user
-WHERE User IN ('admin_biblioteka','bibliotekarz','czytelnik','analityk');
+-- Lista uzytkownikow i rol do szybkiej weryfikacji
+SELECT User, Host, is_role
+FROM mysql.user
+WHERE User IN (
+    'admin_biblioteka', 'bibliotekarz', 'czytelnik', 'analityk',
+    'rola_admin_biblioteka', 'rola_bibliotekarz', 'rola_czytelnik', 'rola_analityk'
+)
+ORDER BY is_role DESC, User, Host;
+
+SELECT FROM_USER AS rola, FROM_HOST AS rola_host, TO_USER AS uzytkownik, TO_HOST AS user_host
+FROM mysql.role_edges
+WHERE TO_USER IN ('admin_biblioteka', 'bibliotekarz', 'czytelnik', 'analityk')
+ORDER BY rola, uzytkownik, user_host;

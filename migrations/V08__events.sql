@@ -1,5 +1,5 @@
 -- ============================================================================
--- V07__events.sql - 2 zaplanowane zadania (Event Scheduler)
+-- V08__events.sql - 2 zaplanowane zadania (Event Scheduler)
 -- ============================================================================
 USE biblioteka;
 SET GLOBAL event_scheduler = ON;

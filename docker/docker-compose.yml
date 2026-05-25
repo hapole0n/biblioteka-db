@@ -8,8 +8,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: biblioteka
-      MYSQL_USER: bibliotekarz
-      MYSQL_PASSWORD: bibliotekarz123
       TZ: Europe/Warsaw
     ports:
       - "3307:3306"  # 3307 zeby nie konfliktowac z XAMPP na 3306

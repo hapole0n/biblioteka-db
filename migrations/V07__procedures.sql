@@ -1,6 +1,6 @@
 -- ============================================================================
--- V06__procedures.sql - 5 procedur skladowanych z transakcjami
--- WYMAGANIE: V09 musi byc juz zaladowane (Punkty_Lojalnosci, Rezerwacje)
+-- V07__procedures.sql - 5 procedur skladowanych z transakcjami
+-- WYMAGANIE: V06 musi byc juz zaladowane (Punkty_Lojalnosci, Rezerwacje)
 -- ============================================================================
 USE biblioteka;
 

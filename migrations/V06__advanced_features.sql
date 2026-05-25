@@ -1,8 +1,7 @@
 -- ============================================================================
--- V09__advanced_features.sql - tabele subsystemow + audit log + FULLTEXT + kolejka
--- WAZNE: ten plik MUSI byc zaladowany PRZED V06 (procedury) bo uzywaja Punkty_Lojalnosci
--- W naszej numeracji V09 ladowane jest po V06, dlatego procedure uzywaja juz utworzone tu tabele.
--- Aby zapewnic poprawna kolejnosc, ta migracja TWORZY tabele subsystemow i triggery do nich.
+-- V06__advanced_features.sql - tabele subsystemow + audit log + FULLTEXT + kolejka
+-- WAZNE: ten plik MUSI byc zaladowany PRZED V07 (procedury),
+-- bo procedury uzywaja tabel Punkty_Lojalnosci oraz Rezerwacje.
 -- ============================================================================
 USE biblioteka;
 

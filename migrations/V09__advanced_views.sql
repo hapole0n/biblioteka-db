@@ -1,5 +1,5 @@
 -- ============================================================================
--- V08__advanced_views.sql - 5 widokow z funkcjami okiennymi
+-- V09__advanced_views.sql - 5 widokow z funkcjami okiennymi
 -- ============================================================================
 USE biblioteka;
 
