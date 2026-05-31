@@ -26,7 +26,6 @@
 - **2 zaplanowane eventy** (codzienne sprawdzanie przetrzymanych)
 - **FULLTEXT search** po tytulach z rankingiem trafnosci
 - **Generyczny audit log** w formacie JSON
-- **4 role bazodanowe** (Admin, Bibliotekarz, Czytelnik, Analityk)
 - **CI/CD** przez GitHub Actions
 - **Docker Compose** alternatywa dla XAMPP
 
@@ -78,7 +77,7 @@ Skrypt pokazuje:
 - katalog ksiazek z autorami,
 - aktualne wypozyczenia i nieoplacone kary,
 - funkcje UDF i procedury raportowe,
-- window functions, FULLTEXT search, triggery i role bazodanowe.
+- window functions, FULLTEXT search, triggery i event scheduler.
 
 Przy Dockerze i lokalnym kliencie `mysql`:
 
@@ -87,17 +86,6 @@ Przy Dockerze i lokalnym kliencie `mysql`:
 ```
 
 Pelny plan prezentacji jest w [docs/PREZENTACJA.md](docs/PREZENTACJA.md).
-
-## Konta demonstracyjne
-
-Migracja `V10__permissions.sql` tworzy prawdziwe role MySQL i przypisuje je do kont:
-
-| Konto | Haslo | Rola |
-|-------|-------|------|
-| `admin_biblioteka` | `AdminPass2025!` | `rola_admin_biblioteka` |
-| `bibliotekarz` | `Bibliotekarz2025!` | `rola_bibliotekarz` |
-| `czytelnik` | `Czytelnik2025!` | `rola_czytelnik` |
-| `analityk` | `Analityk2025!` | `rola_analityk` |
 
 ## Diagram ERD
 

@@ -42,13 +42,13 @@ cd ..
    "Triggery pilnuja poprawnosci dat, blokuja usuwanie wypozyczonych egzemplarzy, normalizuja imiona autorow i automatycznie naliczaja kare po zmianie statusu na `przetrzymane`."
 
 5. Zaawansowany SQL:
-   "Projekt zawiera widoki, funkcje UDF, procedury skladowane z transakcjami, window functions, FULLTEXT search, event scheduler oraz role bazodanowe."
+   "Projekt zawiera widoki, funkcje UDF, procedury skladowane z transakcjami, window functions, FULLTEXT search oraz event scheduler."
 
 6. Demo:
    "Teraz uruchamiam `scripts/demo.ps1`. Skrypt pokazuje liczbe obiektow, katalog ksiazek, aktualne wypozyczenia, kary, funkcje, procedury raportowe, ranking z window functions, FULLTEXT oraz triggery w transakcji testowej."
 
-7. Uprawnienia:
-   "W `V10__permissions.sql` sa utworzone prawdziwe role MySQL: admin, bibliotekarz, czytelnik i analityk. Role sa przypisane do kont demonstracyjnych, wiec mozna pokazac rozdzielenie dostepu."
+7. Podsumowanie:
+   "Projekt skupia sie na modelu biblioteki, logice biznesowej, raportach i automatyzacji po stronie bazy, bez logowania na osobne profile uzytkownikow."
 
 ## Co pokazac na ekranie
 
@@ -66,7 +66,7 @@ cd ..
 ## Odpowiedzi na typowe pytania
 
 **Dlaczego MySQL?**
-Projekt korzysta z procedur, triggerow, event scheduler, FULLTEXT i rol bazodanowych, czyli funkcji dobrze wspieranych przez MySQL 8.
+Projekt korzysta z procedur, triggerow, event scheduler i FULLTEXT, czyli funkcji dobrze wspieranych przez MySQL 8.
 
 **Gdzie sa relacje wiele-do-wielu?**
 Ksiazka moze miec wielu autorow, dlatego jest tabela `K_A`. Jedno wypozyczenie moze obejmowac wiecej niz jeden egzemplarz, dlatego jest tabela `W_E`.

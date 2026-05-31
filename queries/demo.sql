@@ -87,21 +87,8 @@ FROM Kary
 WHERE id_wypozyczenie = 55;
 ROLLBACK;
 
-SELECT '10. Event scheduler i role bazodanowe' AS etap;
+SELECT '10. Event scheduler' AS etap;
 SELECT EVENT_NAME, INTERVAL_VALUE, INTERVAL_FIELD, STATUS
 FROM information_schema.EVENTS
 WHERE EVENT_SCHEMA = 'biblioteka'
 ORDER BY EVENT_NAME;
-
-SELECT User, Host, is_role
-FROM mysql.user
-WHERE User IN (
-    'admin_biblioteka', 'bibliotekarz', 'czytelnik', 'analityk',
-    'rola_admin_biblioteka', 'rola_bibliotekarz', 'rola_czytelnik', 'rola_analityk'
-)
-ORDER BY is_role DESC, User, Host;
-
-SELECT FROM_USER AS rola, FROM_HOST AS rola_host, TO_USER AS uzytkownik, TO_HOST AS user_host
-FROM mysql.role_edges
-WHERE TO_USER IN ('admin_biblioteka', 'bibliotekarz', 'czytelnik', 'analityk')
-ORDER BY rola, uzytkownik, user_host;
